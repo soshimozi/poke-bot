@@ -53,6 +53,10 @@ client.on("messageCreate", async (message) => {
     console.log(`${client.user?.username} sent us a message:  ${message.content}`);
 })
 
+client.on("messageReactionAdd", async(reaction, user) => {
+    console.log("got a reaction!")
+})
+
 client.login(token).then( (res) => {
     console.log('Bot successfully logged in.')
 })
