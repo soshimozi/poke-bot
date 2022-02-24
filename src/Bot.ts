@@ -1,10 +1,10 @@
 require('dotenv').config(); // Recommended way of loading dotenv
 
-import {Client, Message, PartialMessage} from "discord.js"
-import readyHook from "./hooks/ready-hook";
-import messageHook from './hooks/message-hook'
+import {Client} from "discord.js"
 
-//import interactionCreate from "./interactionCreate";
+import readyHook from "./hooks/readyHook";
+import messageCreateHook from './hooks/messageCreateHook'
+import messageReactionAddHook from './hooks/messaeReactionAddHook'
 
 console.log("Bot is starting...")
 
@@ -23,39 +23,9 @@ const client = new Client(
     });
 
 // register hooks
-//readyHook(client)
-//messageHook(client)
-
-client.on("ready", async () => {
-    if (!client.user) {
-        return;
-    }
-    console.log(`${client.user.username} is online ready for commands.`);
-});
-
-client.on("messageUpdate", async(oldMessage, message) => {
-    console.log(`messageUpdate => oldMessage: '${oldMessage}', message: '${message}'`)
-})
-
-client.on("messageCreate", async (message) => {
-
-    console.log('got a message!')
-
-    // Ignore partial messages
-    if(message.partial) return;
-
-    if(message.author.bot) return;
-    if(message.author.id === client.user?.id) return;
-
-    // don't count DMs
-    if(!message.guild) return;
-
-    console.log(`${client.user?.username} sent us a message:  ${message.content}`);
-})
-
-client.on("messageReactionAdd", async(reaction, user) => {
-    console.log("got a reaction!")
-})
+readyHook(client)
+messageCreateHook(client)
+messageReactionAddHook(client)
 
 client.login(token).then( (res) => {
     console.log('Bot successfully logged in.')
