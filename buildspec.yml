@@ -1,0 +1,41 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      # install node 13
+      - echo Installing Node 13...
+      - curl -sL https://deb.nodesource.com/setup_14.x | bash -
+      - apt-get install -y nodejs
+
+  pre_build:
+    commands:
+      # install dependencies
+      - echo Installing dependencies...
+      - npm install
+
+  build:
+    commands:
+      # test
+      # build
+      - echo Building with NPM
+      - npm run build
+  post_build:
+    commands:
+      - echo Copying assets to distribution folder
+      - cp -r assets/ dist/
+      - cp package.json dist/
+      - cp appspec.yml dist/
+      - cp -r scripts/ dist/
+      - echo "PREFIX=!" > dist/.env
+      - echo "DATABASENAME=/data/rankbot-database" >> dist/.env
+      - echo "YOUTUBEAPIKEY=$YOUTUBEAPIKEY" >> dist/.env
+      - echo "DISCORDBOTKEY=$DISCORDBOTKEY" >> dist/.env
+      - echo "APODAPIKEY=$APODAPIKEY" >> dist/.env
+
+artifacts:
+  files:
+    - "**/*"
+  discard-paths: no
+  base-directory: dist
+
