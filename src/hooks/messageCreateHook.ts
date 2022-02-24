@@ -2,7 +2,7 @@ import {Client, Message, MessageAttachment, MessageEmbed, WebhookClient} from "d
 import {RankCard} from 'discord-canvas';
 import {Trainer} from "../models/Trainer";
 import PokemonCard from "../cards/pokemon";
-import {getBotForGuild} from "../utils";
+import {getBotForGuild, randomInt} from "../utils";
 
 import moment from "moment";
 import {PokemonRepository} from "../PokemonRepository";
@@ -53,16 +53,13 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
 
     await botState.save()
 
-    const pokeList = await PokemonRepository.getPokemonList(0, 1126)
+    const pokeList = await PokemonRepository.getPokemonList(0, 2000)
 
-    const index = Math.floor(Math.random() * (500 - 0 + 1) + 500)
+    const index = randomInt(0, pokeList.results.length - 1)
+    console.log(index)
 
-    console.log('index: ', index)
     const pokeListItem = pokeList.results[index]
-    console.log(pokeListItem)
-
     const pokemon = await PokemonRepository.getPokemonInfo(pokeListItem.name)
-
     const avatar = await canvacord.Canvas.circle(pokemon.sprites.front_default);
 
     const pc = await new PokemonCard()
