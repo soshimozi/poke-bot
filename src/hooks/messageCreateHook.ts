@@ -34,7 +34,7 @@ export default (client:Client) : void => {
             .setBadge(1, null)
             .setBadge(2, "diamond")
             //.setBadge(3, "silver")
-            //.setBadge(4, "bronze")
+            .setBadge(4, "bronze")
             .setXP("current", 500) // XP POINTS IN THIS RANK
             .setXP("needed", 1500) // XP POINTS NECESSARY FOR THE NEXT RANK
             .setRadius(50)
@@ -42,7 +42,6 @@ export default (client:Client) : void => {
             .toAttachment();
 
         const attachment = new MessageAttachment(image.toBuffer(), "rank-card.png");
-
         const exampleEmbed = new MessageEmbed()
             .setTitle("Rank Card Example")
             .setImage("attachment://rank-card.png")
