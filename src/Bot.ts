@@ -4,7 +4,7 @@ import {Client} from "discord.js"
 
 import readyHook from "./hooks/readyHook";
 import messageCreateHook from './hooks/messageCreateHook'
-import messageReactionAddHook from './hooks/messaeReactionAddHook'
+import messageReactionAddHook from './hooks/messageReactionAddHook'
 
 console.log("Bot is starting...")
 

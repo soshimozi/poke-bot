@@ -1,33 +1,34 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
     "module": "commonjs",
-    "rootDir": "./src/",
-    "outDir": "./dist/",
-    "strict": true,
     "moduleResolution": "node",
-    "importHelpers": true,
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true,
-    "removeComments": true,
+    "target": "es6", // or a more recent ecmascript version
+    "outDir": "./dist/bin",
+    "lib": [
+      "es6",
+      "dom"
+    ],
+    "sourceMap": true,
+    "types": [
+      // add node as an option
+      "node",
+      "reflect-metadata"
+    ],
     "typeRoots": [
+      // add path to @types
       "node_modules/@types"
     ],
-    "sourceMap": false,
-    "baseUrl": "./"
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true, /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
+    "skipLibCheck": true, /* Skip type checking of declaration files. */
   },
-  "files": [
-    "src/Bot.ts"
-  ],
   "include": [
-    "./**/*.ts"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
     "dist"
-  ],
+  ]
 }
