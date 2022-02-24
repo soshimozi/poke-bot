@@ -2,6 +2,9 @@ import {Client, Message, MessageAttachment, MessageEmbed} from "discord.js";
 import {RankCard} from 'discord-canvas';
 import {Trainer} from "../models/Trainer";
 const canvacord = require("canvacord");
+const Canvas = require("canvas");
+
+let count = 0
 
 export default (client:Client) : void => {
     client.on("messageCreate", async (message: Message) => {
@@ -9,52 +12,60 @@ export default (client:Client) : void => {
         console.log('got a message!')
 
         // Ignore partial messages
-        if(message.partial) return;
+        if(message.partial) return
 
-        if(message.author.bot) return;
-        if(message.author.id === client.user?.id) return;
+        if(message.author.bot) return
+        if(message.author.id === client.user?.id) return
 
         // don't count DMs
-        if(!message.guild) return;
+        if(!message.guild) return
 
-        console.log(`${client.user?.username} sent us a message:  ${message.content}`);
+        console.log(`${client.user?.username} sent us a message:  ${message.content}`)
 
-        let avatar = await canvacord.Canvas.circle(message.author.displayAvatarURL({ dynamic: false, format: 'png' }));
+        if(!message.content.startsWith(process.env.PREFIX)) {
+            return await checkForRandomEncounters(client, message)
+        }
 
-        const image = await new RankCard()
-            //.setAvatar(message.author.avatarURL({format: "png" }))
-            //.setAvatar(message.author.displayAvatarURL({dynamic: false, format: "png" }))
-            .setAvatar(avatar)
-            .setColor("background", "#296BC2") // BACKGROUND COLOR
-            .setColor("needed-xp", "#ffffff")
-            .setColor("background-bar", "#ffffff")
-            .setColor("bar", "#05CEF7")
-            .setColor("level", "#ffffff") // LEVEL COLOR
-            .setColor("level-box", "#05CEF7") // LEVEL COLOR
-            .setAddon("reputation", false) // Reputation box
-            .setBadge(1, null)
-            .setBadge(2, "diamond")
-            //.setBadge(3, "silver")
-            .setBadge(4, "bronze")
-            .setXP("current", 500) // XP POINTS IN THIS RANK
-            .setXP("needed", 1500) // XP POINTS NECESSARY FOR THE NEXT RANK
-            .setRadius(50)
-            .setUsername(message.author.username)
-            .toAttachment();
+        let canvas = Canvas.createCanvas(1080, 400),
+            ctx = canvas.getContext("2d");
 
-        const attachment = new MessageAttachment(image.toBuffer(), "rank-card.png");
-        const exampleEmbed = new MessageEmbed()
+        const radiusCorner = "10"
+
+        // Background
+        ctx.beginPath();
+        ctx.moveTo(0 + Number(radiusCorner), 0);
+        ctx.lineTo(0 + 1080 - Number(radiusCorner), 0);
+        ctx.quadraticCurveTo(0 + 1080, 0, 0 + 1080, 0 + Number(radiusCorner));
+        ctx.lineTo(0 + 1080, 0 + 400 - Number(radiusCorner));
+        ctx.quadraticCurveTo(
+            0 + 1080,
+            0 + 400,
+            0 + 1080 - Number(radiusCorner),
+            0 + 400
+        );
+        ctx.lineTo(0 + Number(radiusCorner), 0 + 400);
+        ctx.quadraticCurveTo(0, 0 + 400, 0, 0 + 400 - Number(radiusCorner));
+        ctx.lineTo(0, 0 + Number(radiusCorner));
+        ctx.quadraticCurveTo(0, 0, 0 + Number(radiusCorner), 0);
+        ctx.closePath();
+        ctx.clip();
+        if(count > 0)
+            ctx.fillStyle = "Blue";
+        else
+            ctx.fillStyle = "Yellow";
+        ctx.fillRect(0, 0, 1080, 400);
+
+        const attachment = new MessageAttachment(canvas.toBuffer(), "rank-card.png");
+        const embed = new MessageEmbed()
             .setTitle("Rank Card Example")
             .setImage("attachment://rank-card.png")
 
+        count++
 
-        const guildId = message.guild.id
-        const userId = message.author.id
-
-        let trainer = await Trainer.findOne({where: {userId, guildId}});
-
-        console.log('found trainer: ', trainer.userId)
-
-        await message.channel.send({embeds: [exampleEmbed], files:[attachment]})
+        await message.channel.send({embeds: [embed], files:[attachment]})
     });
+}
+
+async function checkForRandomEncounters(client:Client, message:Message): Promise<void> {
+
 }
