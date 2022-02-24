@@ -3,7 +3,7 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es6", // or a more recent ecmascript version
-    "outDir": "./dist/bin",
+    "outDir": "./dist",
     "lib": [
       "es6",
       "dom"
