@@ -1,5 +1,6 @@
 import {Client, Message, MessageAttachment, MessageEmbed} from "discord.js";
 import {RankCard} from 'discord-canvas';
+import {Trainer} from "../models/Trainer";
 const canvacord = require("canvacord");
 
 export default (client:Client) : void => {
@@ -45,6 +46,14 @@ export default (client:Client) : void => {
         const exampleEmbed = new MessageEmbed()
             .setTitle("Rank Card Example")
             .setImage("attachment://rank-card.png")
+
+
+        const guildId = message.guild.id
+        const userId = message.author.id
+
+        let trainer = await Trainer.findOne({where: {userId, guildId}});
+
+        console.log('found trainer: ', trainer.userId)
 
         await message.channel.send({embeds: [exampleEmbed], files:[attachment]})
     });
