@@ -8,12 +8,22 @@ const P = new Pokedex();
 */
 
 export interface PokemonAbility {
-    name: string,
+    name: string
     url: string
 }
 
 export interface PokemonAbilities {
     ability : PokemonAbility
+}
+
+export interface  PokemonTypeRecord {
+    name: string
+    url: string
+}
+
+export interface PokemonType {
+    slot: number;
+    type: PokemonTypeRecord;
 }
 
 export interface IPokemonSprites {
@@ -36,6 +46,7 @@ export interface IPokemonInfo {
     weight: number;
     sprites:IPokemonSprites;
     abilities: PokemonAbilities[];
+    types: PokemonType[];
 }
 
 export interface IPokemonListEntry {

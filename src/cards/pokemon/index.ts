@@ -11,7 +11,8 @@ export default class PokemonCard {
     private borderWidth: string;
     private borderColor: string;
     private pokemonName: string;
-    private pokemonAbilities: PokemonAbilities[];
+    private pokemonType: string[]
+    private pokemonSpecies: string
 
     constructor() {
         this.radiusCorner = "20"
@@ -21,12 +22,13 @@ export default class PokemonCard {
         this.opacityPokemonAvatar = "0.4";
         this.borderWidth = "0"
         this.pokemonName = ""
-        this.pokemonAbilities = []
+        this.pokemonType = []
+        this.pokemonSpecies = ""
         this.borderColor = "Black"
     }
 
-    addAbility(name: string, url: string) {
-        this.pokemonAbilities.push({ability: {name, url}})
+    addType(name: string) {
+        this.pokemonType.push(name)
         return this
     }
 
@@ -91,6 +93,10 @@ export default class PokemonCard {
         ctx.drawImage(avatar, 10, 10, 220, 220);
 
         //await this.drawBorder(ctx);
+
+        this.pokemonType.forEach((t, i) => {
+            ctx.strokeText(t, 250, i * 20 + 10)
+        })
 
         return canvas;
     }

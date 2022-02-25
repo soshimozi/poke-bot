@@ -70,6 +70,10 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
         .setPokemonAvatar(avatar)
         .setOpacityAvatar("0.4");
 
+    pokemon.types.forEach((pt, index) => {
+        pc.addType(pt.type.name);
+    })
+
     const cardAttachment = await pc.toAttachment()
 
     const attachment = new MessageAttachment(await cardAttachment.toBuffer(), "pokemon-card.png");
