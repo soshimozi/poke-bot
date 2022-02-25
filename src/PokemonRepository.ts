@@ -48,6 +48,8 @@ export class PokemonRepository {
     }
 
     static async getPokemonInfo(name: string): Promise<IPokemonInfo> {
-        return await P.getPokemonByName(name);
+
+        const pokemon = await P.getPokemonByName(name)
+        return pokemon
     }
 }

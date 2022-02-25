@@ -46,26 +46,26 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
 
     if(moment().diff(moment(botState.nextEncounter || new Date())) < 0) return
 
-    let timeout = Math.floor(Math.random() * (30 - 10 + 1) + 10)
-
-    botState.nextEncounter = moment(botState.nextEncounter || new Date()).add(timeout, 'seconds').toDate()
-    botState.currentPokemon = 12323
-
-    await botState.save()
-
     const pokeList = await PokemonRepository.getPokemonList(0, 2000)
 
     const index = randomInt(0, pokeList.results.length - 1)
-    console.log(index)
+
+    let timeout = Math.floor(Math.random() * (30 - 10 + 1) + 10)
+    botState.nextEncounter = moment(botState.nextEncounter || new Date()).add(timeout, 'seconds').toDate()
+
+    botState.currentPokemon = index
+    await botState.save()
 
     const pokeListItem = pokeList.results[index]
     const pokemon = await PokemonRepository.getPokemonInfo(pokeListItem.name)
     const avatar = await canvacord.Canvas.circle(pokemon.sprites.front_default);
 
     const pc = await new PokemonCard()
-        .setColorBackground(count > 0 ? "Blue" : "Yellow")
+        .setColorBackground("#ffffff")
+        .setBorderColor("#2f2f2f")
+        .setBorderWidth("7")
         .setPokemonAvatar(avatar)
-        .setOpacityAvatar("1.0")
+        .setOpacityAvatar("0.4")
         .toAttachment()
 
     const attachment = new MessageAttachment(await pc.toBuffer(), "rank-card.png");
