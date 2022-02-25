@@ -92,6 +92,7 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
         .setTitle(`${isVowel(pokemon.name[0]) ? 'An' : 'A'} ${capitalize(pokemon.name)} Appears!`)
         .setDescription(`${isVowel(pokemon.name[0]) ? 'An' : 'A'} ${capitalize(pokemon.name)} has appeared!  You can use the **!catch** command to catch it.`)
         .setTimestamp(new Date())
+        .setThumbnail(pokemon.sprites.front_default)
         .addField('Description', flavorText, false)
         .addField("Difficulty", pokemonSpecies.capture_rate < 3 ? "Extremely Hard" : pokemonSpecies.capture_rate < 10 ? "Very Hard" : pokemonSpecies.capture_rate < 30 ? "Hard" : pokemonSpecies.capture_rate < 50 ? "Medium" : pokemonSpecies.capture_rate < 80 ? "Easy" : "Very Easy", true)
         .addField('Experience Points', `${pokemon.base_experience}`, true)
@@ -99,8 +100,8 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
         .addField("Mythical", pokemonSpecies.is_mythical ? "Yes" : "No", true)
         .addField("Legendary", pokemonSpecies.is_legendary ? "Yes" : "No", true)
         .addField("Baby", pokemonSpecies.is_baby ? "Yes" : "No", true)
-        .setImage(pokemon.sprites.front_shiny)
-        .setFooter( { text: 'Gotta catchem all!' })
+        .setImage(pokemon.sprites.front_default)
+        .setFooter( { text: 'Gotta catchem all!', iconURL: pokemon.sprites.front_default })
 
     await message.channel.send({embeds: [embed], files:[]})
 }
