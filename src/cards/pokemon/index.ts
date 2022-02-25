@@ -1,5 +1,6 @@
 import Canvas from "canvas";
 import * as fs from "fs";
+import {PokemonAbilities} from "../../PokemonRepository";
 
 export default class PokemonCard {
     private radiusCorner: string;
@@ -9,6 +10,8 @@ export default class PokemonCard {
     private opacityPokemonAvatar: string;
     private borderWidth: string;
     private borderColor: string;
+    private pokemonName: string;
+    private pokemonAbilities: PokemonAbilities[];
 
     constructor() {
         this.radiusCorner = "20"
@@ -17,7 +20,14 @@ export default class PokemonCard {
         this.backgroundImage = `${__dirname}/../../../assets/img/1px.png`
         this.opacityPokemonAvatar = "0.4";
         this.borderWidth = "0"
+        this.pokemonName = ""
+        this.pokemonAbilities = []
         this.borderColor = "Black"
+    }
+
+    addAbility(name: string, url: string) {
+        this.pokemonAbilities.push({ability: {name, url}})
+        return this
     }
 
     setOpacityAvatar(val: string) {
@@ -73,11 +83,14 @@ export default class PokemonCard {
         ctx.stroke()
 
 
+
+        console.log('avatar :', this.pokemonAvatar)
+
         // Avatar
         let avatar = await Canvas.loadImage(this.pokemonAvatar);
         ctx.drawImage(avatar, 10, 10, 220, 220);
 
-        await this.drawBorder(ctx);
+        //await this.drawBorder(ctx);
 
         return canvas;
     }
@@ -96,16 +109,15 @@ export default class PokemonCard {
     private drawBackgroundPath(ctx: Canvas.CanvasRenderingContext2D) {
         ctx.beginPath();
 
-        const borderWidth = Number(this.borderWidth)
-        ctx.moveTo(0 + Number(this.radiusCorner) + borderWidth, borderWidth);
-        ctx.lineTo(0 + 1080 - Number(this.radiusCorner), borderWidth);
-        ctx.quadraticCurveTo(borderWidth + 1080, 0, borderWidth + 1080, borderWidth + Number(this.radiusCorner));
-        ctx.lineTo(borderWidth + 1080, borderWidth + 400 - Number(this.radiusCorner));
+        ctx.moveTo(0 + Number(this.radiusCorner), 0);
+        ctx.lineTo(0 + 1080 - Number(this.radiusCorner), 0);
+        ctx.quadraticCurveTo(0 + 1080, 0, 0 + 1080, 0 + Number(this.radiusCorner));
+        ctx.lineTo(0 + 1080, 0 + 400 - Number(this.radiusCorner));
         ctx.quadraticCurveTo(
-            borderWidth + 1080,
-            borderWidth + 400,
-            borderWidth + 1080 - Number(this.radiusCorner),
-            borderWidth + 400
+            0 + 1080,
+            0 + 400,
+            0 + 1080 - Number(this.radiusCorner),
+            0 + 400
         );
         ctx.lineTo(0 + Number(this.radiusCorner), 0 + 400);
         ctx.quadraticCurveTo(0, 0 + 400, 0, 0 + 400 - Number(this.radiusCorner));

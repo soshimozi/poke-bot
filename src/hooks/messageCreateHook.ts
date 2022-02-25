@@ -60,18 +60,22 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
     const pokemon = await PokemonRepository.getPokemonInfo(pokeListItem.name)
     const avatar = await canvacord.Canvas.circle(pokemon.sprites.front_default);
 
-    const pc = await new PokemonCard()
+    console.log('pokemon: ', pokeListItem?.name)
+    console.log('index: ', index)
+
+    const pc = new PokemonCard()
         .setColorBackground("#ffffff")
         .setBorderColor("#2f2f2f")
         .setBorderWidth("7")
         .setPokemonAvatar(avatar)
-        .setOpacityAvatar("0.4")
-        .toAttachment()
+        .setOpacityAvatar("0.4");
 
-    const attachment = new MessageAttachment(await pc.toBuffer(), "rank-card.png");
+    const cardAttachment = await pc.toAttachment()
+
+    const attachment = new MessageAttachment(await cardAttachment.toBuffer(), "pokemon-card.png");
     const embed = new MessageEmbed()
-        .setTitle("Rank Card Example")
-        .setImage("attachment://rank-card.png")
+        .setTitle("A Pokemon Appears!")
+        .setImage("attachment://pokemon-card.png")
 
     count++
 

@@ -7,6 +7,15 @@ const P = new Pokedex();
 {"count":1118,"next":"https://pokeapi.co/api/v2/pokemon?offset=181&limit=181","previous":null,"results":[{"name":"bulbasaur","url":"https://pokeapi.co/api/v2/pokemon/1/"}
 */
 
+export interface PokemonAbility {
+    name: string,
+    url: string
+}
+
+export interface PokemonAbilities {
+    ability : PokemonAbility
+}
+
 export interface IPokemonSprites {
     front_default: string;
     front_shiny: string;
@@ -26,6 +35,7 @@ export interface IPokemonInfo {
     is_default: boolean;
     weight: number;
     sprites:IPokemonSprites;
+    abilities: PokemonAbilities[];
 }
 
 export interface IPokemonListEntry {
