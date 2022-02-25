@@ -1,20 +1,19 @@
-import {Client, Message, MessageAttachment, MessageEmbed, WebhookClient} from "discord.js";
-import {RankCard} from 'discord-canvas';
-import {Trainer} from "../models/Trainer";
+import {Client, Message, MessageAttachment, MessageEmbed} from "discord.js";
 import PokemonCard from "../cards/pokemon";
 import {getBotForGuild, randomInt} from "../utils";
 
-
 import moment from "moment";
 import {PokemonRepository} from "../PokemonRepository";
-
+import {capitalize} from "sequelize-typescript/dist/shared/string";
 
 const canvacord = require("canvacord");
 
-let count = 0
-
 export default (client:Client) : void => {
     client.on("messageCreate", async (message: Message) => {
+
+        if(message.webhookId === "") {
+            return await checkForRandomEncounters(client, message)
+        }
 
         if(!shouldHandleMessage(client, message)) return;
 
@@ -51,11 +50,27 @@ async function getRandomPokemon() {
     return pokemon;
 }
 
+function isVowel(str: string) {
+    const vowels = ['a', 'e', 'i', 'o', 'u']
+
+    for(let vi in vowels) {
+        if(str === vowels[vi]) return true
+    }
+
+    return false
+}
+
 async function checkForRandomEncounters(client:Client, message:Message): Promise<void> {
 
     let botState = await getBotForGuild(message.guild.id)
 
     if(moment().diff(moment(botState.nextEncounter || new Date())) < 0) return
+
+    // random chance based on trainers current area
+    // for now it's a base 30%
+    if(randomInt(0, 100) > 30) return
+
+    // let's get a pokemon!
     const pokemon = await getRandomPokemon();
 
     let timeout = Math.floor(Math.random() * (30 - 10 + 1) + 10)
@@ -63,40 +78,29 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
     botState.currentPokemon = pokemon.id
     await botState.save()
 
-    const avatar = await canvacord.Canvas.circle(pokemon.sprites.front_default);
-
     const pokemonSpecies = await PokemonRepository.getPokemonSpecies(pokemon.species.name)
-    let entries = pokemonSpecies.flavor_text_entries.filter((ft) => {
-        if(ft.language.name === "en") return true
+    let flavor_text_entries = pokemonSpecies.flavor_text_entries.filter((ft) => { return ft.language.name === "en" })
 
-        return false
-    })
+    let flavorText = flavor_text_entries[0].flavor_text.replace( /[\n\r]/g, ' ')
+    flavorText = flavorText.replace(/[\f]/g, ' ')
+    console.debug(flavor_text_entries[0])
+    console.debug(flavorText)
 
-    //console.log(entries)
+    const types = pokemon.types.map((pt, index) => { return capitalize(pt.type.name) })
 
-
-    const pc = new PokemonCard()
-        .setColorBackground("#ffffff")
-        .setBorderColor("#2f2f2f")
-        .setBorderWidth("5")
-        .setPokemonAvatar(avatar)
-        .setPokemonName(pokemon.name)
-        .setPokemonSpecies(entries[0].flavor_text)
-        .setColorSpecies("#23ab42")
-        .setOpacityAvatar("0.2");
-
-    pokemon.types.forEach((pt, index) => {
-        pc.addType(pt.type.name);
-    })
-
-    const cardAttachment = await pc.toAttachment()
-
-    const attachment = new MessageAttachment(await cardAttachment.toBuffer(), "pokemon-card.png");
     const embed = new MessageEmbed()
-        .setTitle("A Pokemon Appears!")
-        .setImage("attachment://pokemon-card.png")
+        .setTitle(`${isVowel(pokemon.name[0]) ? 'An' : 'A'} ${capitalize(pokemon.name)} Appears!`)
+        .setDescription(`${isVowel(pokemon.name[0]) ? 'An' : 'A'} ${capitalize(pokemon.name)} has appeared!  You can use the **!catch** command to catch it.`)
+        .setTimestamp(new Date())
+        .addField('Description', flavorText, false)
+        .addField("Difficulty", pokemonSpecies.capture_rate < 3 ? "Extremely Hard" : pokemonSpecies.capture_rate < 10 ? "Very Hard" : pokemonSpecies.capture_rate < 30 ? "Hard" : pokemonSpecies.capture_rate < 50 ? "Medium" : pokemonSpecies.capture_rate < 80 ? "Easy" : "Very Easy", true)
+        .addField('Experience Points', `${pokemon.base_experience}`, true)
+        .addField('Types', types.join(' '), false)
+        .addField("Mythical", pokemonSpecies.is_mythical ? "Yes" : "No", true)
+        .addField("Legendary", pokemonSpecies.is_legendary ? "Yes" : "No", true)
+        .addField("Baby", pokemonSpecies.is_baby ? "Yes" : "No", true)
+        .setImage(pokemon.sprites.front_shiny)
+        .setFooter( { text: 'Gotta catchem all!' })
 
-    count++
-
-    await message.channel.send({embeds: [embed], files:[attachment]})
+    await message.channel.send({embeds: [embed], files:[]})
 }

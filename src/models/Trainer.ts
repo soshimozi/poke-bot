@@ -52,6 +52,10 @@ export class Trainer extends Model<Trainer> {
 
     @HasMany(() => CaughtMonster)
     pokidex: CaughtMonster[];
+
+    @Default("")
+    @Column
+    currentArea:string;
 }
 
 

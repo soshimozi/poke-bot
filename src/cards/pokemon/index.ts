@@ -136,23 +136,49 @@ export default class PokemonCard {
 
         ctx.fillStyle = this.colorSpecies
         ctx.textAlign = "left"
-        ctx.font = applyText(canvas, this.pokemonSpecies, 32, 800, "Bold")
-        ctx.fillText(this.pokemonSpecies, 260, 32)
-        let tm = ctx.measureText(this.pokemonSpecies)
-        console.log(tm)
+        ctx.font = "32px Calibri" // applyText(canvas, this.pokemonSpecies, 48, 800, "Calibri")
+
+        ctx.fillText(this.pokemonSpecies, 260, 32, 800)
+        //this.wrapText(ctx, this.pokemonSpecies, 260, 48, 900, 32)
 
         ctx.fillStyle = this.colorType;
-        ctx.textAlign = "left";
+        ctx.textAlign = "center";
 
-        ctx.font = applyText(canvas, "Types:", 32, 170, "Bold")
-        ctx.fillText("Types: ", 260, 256)
+        //ctx.font = applyText(canvas, "Types:", 32, 170, "Bold")
+        //ctx.fillText("Types: ", 0, 320)
 
+        const typeString = this.pokemonType.join(" ")
+        ctx.font = applyText(canvas, typeString, 32, 170, "Sans")
+        ctx.fillText(typeString, 120, 320)
+
+        /*
         this.pokemonType.forEach((t, i) => {
             ctx.font = applyText(canvas, t, 32, 170, "Sans")
-            ctx.fillText(t, 260, 256 + (i + 1) * 32)
+            ctx.fillText(t, 0, 320 + (i + 1) * 32)
         })
+        */
 
         return canvas;
+    }
+
+    private wrapText(context, text, x, y, maxWidth, lineHeight) {
+        var words = text.split(' ');
+        var line = '';
+
+        for(var n = 0; n < words.length; n++) {
+            var testLine = line + words[n] + ' ';
+            var metrics = context.measureText(testLine);
+            var testWidth = metrics.width;
+            if (testWidth > maxWidth && n > 0) {
+                context.fillText(line, x, y);
+                line = words[n] + ' ';
+                y += lineHeight;
+            }
+            else {
+                line = testLine;
+            }
+        }
+        context.fillText(line, x, y);
     }
 
     private async drawBorder(ctx: Canvas.CanvasRenderingContext2D) {

@@ -28,6 +28,9 @@ export class BotState extends Model<BotState> {
 
     @Column
     nextEncounter?: Date;
+
+    @Column
+    channelName?: string
 }
 
 
