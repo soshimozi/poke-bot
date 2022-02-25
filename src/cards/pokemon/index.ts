@@ -136,7 +136,7 @@ export default class PokemonCard {
 
         ctx.fillStyle = this.colorSpecies
         ctx.textAlign = "left"
-        ctx.font = applyText(canvas, this.pokemonSpecies, 32, 900, "Bold")
+        ctx.font = applyText(canvas, this.pokemonSpecies, 32, 800, "Bold")
         ctx.fillText(this.pokemonSpecies, 260, 32)
         let tm = ctx.measureText(this.pokemonSpecies)
         console.log(tm)

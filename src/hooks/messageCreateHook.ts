@@ -78,12 +78,12 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
     const pc = new PokemonCard()
         .setColorBackground("#ffffff")
         .setBorderColor("#2f2f2f")
-        .setBorderWidth("7")
+        .setBorderWidth("5")
         .setPokemonAvatar(avatar)
         .setPokemonName(pokemon.name)
         .setPokemonSpecies(entries[0].flavor_text)
         .setColorSpecies("#23ab42")
-        .setOpacityAvatar("0.4");
+        .setOpacityAvatar("0.2");
 
     pokemon.types.forEach((pt, index) => {
         pc.addType(pt.type.name);
