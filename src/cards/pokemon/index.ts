@@ -1,6 +1,7 @@
 import Canvas from "canvas";
 import * as fs from "fs";
 import {PokemonAbilities} from "../../PokemonRepository";
+import {applyText} from "../../utils";
 
 export default class PokemonCard {
     private radiusCorner: string;
@@ -13,6 +14,11 @@ export default class PokemonCard {
     private pokemonName: string;
     private pokemonType: string[]
     private pokemonSpecies: string
+    private colorType: string;
+    private colorName: string;
+    private colorSpecies: string;
+    private baseExperience: string;
+    private experienceColor: string;
 
     constructor() {
         this.radiusCorner = "20"
@@ -24,7 +30,12 @@ export default class PokemonCard {
         this.pokemonName = ""
         this.pokemonType = []
         this.pokemonSpecies = ""
-        this.borderColor = "Black"
+        this.borderColor = "#000000"
+        this.colorType = "#000000"
+        this.colorName = "#000000"
+        this.colorSpecies = "#000000"
+        this.baseExperience = ""
+        this.experienceColor = "#000000"
     }
 
     addType(name: string) {
@@ -36,8 +47,24 @@ export default class PokemonCard {
         this.opacityPokemonAvatar = val
         return this
     }
+
     setRadiusCorner(val: string) {
         this.radiusCorner = val
+        return this
+    }
+
+    setPokemonName(val: string) {
+        this.pokemonName = val
+        return this
+    }
+
+    setColorName(val: string) {
+        this.colorName = val
+        return this
+    }
+
+    setColorType(val: string) {
+        this.colorType = val
         return this
     }
 
@@ -45,6 +72,7 @@ export default class PokemonCard {
         this.pokemonAvatar = val
         return this
     }
+
     setColorBackground(val: string) {
         this.colorBackground = val
         return this
@@ -57,6 +85,16 @@ export default class PokemonCard {
 
     setBorderWidth(val: string) {
         this.borderWidth = val
+        return this
+    }
+
+    setPokemonSpecies(val: string) {
+        this.pokemonSpecies = val
+        return this
+    }
+
+    setColorSpecies(val: string) {
+        this.colorSpecies = val
         return this
     }
 
@@ -84,18 +122,34 @@ export default class PokemonCard {
         ctx.lineWidth = Number(this.borderWidth)
         ctx.stroke()
 
-
-
-        console.log('avatar :', this.pokemonAvatar)
-
         // Avatar
         let avatar = await Canvas.loadImage(this.pokemonAvatar);
-        ctx.drawImage(avatar, 10, 10, 220, 220);
+        ctx.drawImage(avatar, 10, 64, 220, 220);
+
+        ctx.fillStyle = this.colorName
+        ctx.textAlign = "center"
+
+        ctx.font = applyText(canvas, this.pokemonName, 48, 220, "Bold")
+        ctx.fillText(this.pokemonName, 120, 48)
 
         //await this.drawBorder(ctx);
 
+        ctx.fillStyle = this.colorSpecies
+        ctx.textAlign = "left"
+        ctx.font = applyText(canvas, this.pokemonSpecies, 32, 900, "Bold")
+        ctx.fillText(this.pokemonSpecies, 260, 32)
+        let tm = ctx.measureText(this.pokemonSpecies)
+        console.log(tm)
+
+        ctx.fillStyle = this.colorType;
+        ctx.textAlign = "left";
+
+        ctx.font = applyText(canvas, "Types:", 32, 170, "Bold")
+        ctx.fillText("Types: ", 260, 256)
+
         this.pokemonType.forEach((t, i) => {
-            ctx.strokeText(t, 250, i * 20 + 10)
+            ctx.font = applyText(canvas, t, 32, 170, "Sans")
+            ctx.fillText(t, 260, 256 + (i + 1) * 32)
         })
 
         return canvas;

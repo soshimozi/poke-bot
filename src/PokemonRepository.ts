@@ -7,6 +7,11 @@ const P = new Pokedex();
 {"count":1118,"next":"https://pokeapi.co/api/v2/pokemon?offset=181&limit=181","previous":null,"results":[{"name":"bulbasaur","url":"https://pokeapi.co/api/v2/pokemon/1/"}
 */
 
+export interface PokemonSpeciesEntry {
+    name: string
+    url: string
+}
+
 export interface PokemonAbility {
     name: string
     url: string
@@ -47,6 +52,34 @@ export interface IPokemonInfo {
     sprites:IPokemonSprites;
     abilities: PokemonAbilities[];
     types: PokemonType[];
+    species: PokemonSpeciesEntry
+}
+
+export interface SpeciesColor {
+    name: string
+    url: string
+}
+
+export interface LanguageEntry {
+    name: string
+    url: string
+}
+
+export interface FlavorTextEntry {
+    flavor_text: string
+    language: LanguageEntry
+}
+
+export interface IPokemonSpecies {
+    base_happiness: number
+    capture_rate: number
+    color: SpeciesColor
+    flavor_text_entries: FlavorTextEntry[]
+    id: number
+    name: string
+    is_baby: boolean
+    is_legendary: boolean
+    is_mythical: boolean
 }
 
 export interface IPokemonListEntry {
@@ -72,5 +105,10 @@ export class PokemonRepository {
 
         const pokemon = await P.getPokemonByName(name)
         return pokemon
+    }
+
+    static async getPokemonSpecies(name: string): Promise<IPokemonSpecies> {
+        const species = await P.getPokemonSpeciesByName(name)
+        return species
     }
 }

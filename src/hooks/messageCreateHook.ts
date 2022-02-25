@@ -4,8 +4,10 @@ import {Trainer} from "../models/Trainer";
 import PokemonCard from "../cards/pokemon";
 import {getBotForGuild, randomInt} from "../utils";
 
+
 import moment from "moment";
 import {PokemonRepository} from "../PokemonRepository";
+
 
 const canvacord = require("canvacord");
 
@@ -40,34 +42,47 @@ function shouldHandleMessage(client:Client, message:Message) : boolean {
     return true
 }
 
+async function getRandomPokemon() {
+    const pokeList = await PokemonRepository.getPokemonList(0, 898)
+
+    const index = randomInt(0, pokeList.results.length - 1)
+    const pokeListItem = pokeList.results[index]
+    const pokemon = await PokemonRepository.getPokemonInfo(pokeListItem.name)
+    return pokemon;
+}
+
 async function checkForRandomEncounters(client:Client, message:Message): Promise<void> {
 
     let botState = await getBotForGuild(message.guild.id)
 
     if(moment().diff(moment(botState.nextEncounter || new Date())) < 0) return
-
-    const pokeList = await PokemonRepository.getPokemonList(0, 2000)
-
-    const index = randomInt(0, pokeList.results.length - 1)
+    const pokemon = await getRandomPokemon();
 
     let timeout = Math.floor(Math.random() * (30 - 10 + 1) + 10)
     botState.nextEncounter = moment(botState.nextEncounter || new Date()).add(timeout, 'seconds').toDate()
-
-    botState.currentPokemon = index
+    botState.currentPokemon = pokemon.id
     await botState.save()
 
-    const pokeListItem = pokeList.results[index]
-    const pokemon = await PokemonRepository.getPokemonInfo(pokeListItem.name)
     const avatar = await canvacord.Canvas.circle(pokemon.sprites.front_default);
 
-    console.log('pokemon: ', pokeListItem?.name)
-    console.log('index: ', index)
+    const pokemonSpecies = await PokemonRepository.getPokemonSpecies(pokemon.species.name)
+    let entries = pokemonSpecies.flavor_text_entries.filter((ft) => {
+        if(ft.language.name === "en") return true
+
+        return false
+    })
+
+    //console.log(entries)
+
 
     const pc = new PokemonCard()
         .setColorBackground("#ffffff")
         .setBorderColor("#2f2f2f")
         .setBorderWidth("7")
         .setPokemonAvatar(avatar)
+        .setPokemonName(pokemon.name)
+        .setPokemonSpecies(entries[0].flavor_text)
+        .setColorSpecies("#23ab42")
         .setOpacityAvatar("0.4");
 
     pokemon.types.forEach((pt, index) => {
