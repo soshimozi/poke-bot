@@ -27,10 +27,10 @@ export class BotState extends Model<BotState> {
     currentPokemon?: number;
 
     @Column
-    nextEncounter?: Date;
+    channelName?: string
 
     @Column
-    channelName?: string
+    webhookId?: string
 }
 
 

@@ -11,10 +11,16 @@ const canvacord = require("canvacord");
 export default (client:Client) : void => {
     client.on("messageCreate", async (message: Message) => {
 
-        if(message.webhookId === "") {
+        let botState = await getBotForGuild(message.guild.id)
+
+        console.log(botState.webhookId)
+
+        if(message.webhookId && message.webhookId === botState.webhookId) {
+            await message.delete()
             return await checkForRandomEncounters(client, message)
         }
 
+        /*
         if(!shouldHandleMessage(client, message)) return;
 
         console.log('got a message!')
@@ -24,6 +30,10 @@ export default (client:Client) : void => {
         }
 
         console.log(`${client.user?.username} sent us a command:  ${message.content}`)
+         */
+
+        if(!shouldHandleMessage(client, message)) return
+        if(!message.content.startsWith(process.env.PREFIX)) return
 
     });
 }
@@ -64,8 +74,6 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
 
     let botState = await getBotForGuild(message.guild.id)
 
-    if(moment().diff(moment(botState.nextEncounter || new Date())) < 0) return
-
     // random chance based on trainers current area
     // for now it's a base 30%
     if(randomInt(0, 100) > 30) return
@@ -73,8 +81,6 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
     // let's get a pokemon!
     const pokemon = await getRandomPokemon();
 
-    let timeout = Math.floor(Math.random() * (30 - 10 + 1) + 10)
-    botState.nextEncounter = moment(botState.nextEncounter || new Date()).add(timeout, 'seconds').toDate()
     botState.currentPokemon = pokemon.id
     await botState.save()
 
@@ -100,7 +106,7 @@ async function checkForRandomEncounters(client:Client, message:Message): Promise
         .addField("Mythical", pokemonSpecies.is_mythical ? "Yes" : "No", true)
         .addField("Legendary", pokemonSpecies.is_legendary ? "Yes" : "No", true)
         .addField("Baby", pokemonSpecies.is_baby ? "Yes" : "No", true)
-        .setImage(pokemon.sprites.front_default)
+        //.setImage(pokemon.sprites.front_default)
         .setFooter( { text: 'Gotta catchem all!', iconURL: pokemon.sprites.front_default })
 
     await message.channel.send({embeds: [embed], files:[]})
